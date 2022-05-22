@@ -1,2 +1,2 @@
-# react_tutorial_app
-Reactのチュートリアル
+# react_learning_repo
+React学習用リポジトリ
