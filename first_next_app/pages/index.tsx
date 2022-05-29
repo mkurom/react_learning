@@ -1,9 +1,22 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 import styles from '../styles/Home.module.css'
 
 const Home: NextPage = () => {
+  const router = useRouter();
+
+  function onClickPush() {
+    router.push("/about");
+  };
+
+  // 戻ってもINDEX.tsxには戻れない
+  function onClickReplace() {
+    router.replace("/about");
+  };
+
   return (
     <div className={styles.container}>
       <Head>
@@ -16,6 +29,24 @@ const Home: NextPage = () => {
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
+
+        <div>
+          <button type="button" onClick={onClickPush}>
+            useRouterを使用した画面遷移:Push
+          </button>
+        </div>
+
+        <div>
+          <button type="button" onClick={onClickReplace}>
+            useRouterを使用した画面遷移:eplace
+          </button>
+        </div>
+
+        <div>
+          <Link href="/about">
+            <a>Linkを使用した画面遷移:Aboutページに遷移</a>
+          </Link>
+        </div>
 
         <p className={styles.description}>
           Get started by editing{' '}
@@ -51,7 +82,7 @@ const Home: NextPage = () => {
             </p>
           </a>
         </div>
-      </main>
+      </main >
 
       <footer className={styles.footer}>
         <a
@@ -65,7 +96,7 @@ const Home: NextPage = () => {
           </span>
         </a>
       </footer>
-    </div>
+    </div >
   )
 }
 
