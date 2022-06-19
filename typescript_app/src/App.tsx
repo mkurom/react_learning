@@ -1,27 +1,63 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery
+} from 'react-query'
 
-function App() {
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+      staleTime: 300000,
+    },
+  },
+});
+
+export default function App() {
+
+  const Example = () => {
+    const { isLoading, error, data } = useQuery('repoData', () =>
+      fetch('https://api.github.com/repos/tannerlinsley/react-query').then(res => {
+        console.log('call api');
+        return res.json();
+      }
+      )
+    )
+
+    console.log('build app');
+    console.log(data);
+
+    if (isLoading) {
+      return (
+        <>
+          'Loading...'
+        </>
+      )
+    }
+
+    if (error) {
+      return (
+        <>
+          'An error has occurred: ' + error.message
+        </>
+      )
+    }
+
+    return (
+      <div>
+        <h1>{data.name}</h1>
+        <p>{data.description}</p>
+        <p>subscribers <strong>👀 {data.subscribers_count}</strong>{' '}</p>
+        <p>stargazers<strong>✨ {data.stargazers_count}</strong>{' '}</p>
+        <p>forks<strong>🍴 {data.forks_count}</strong></p>
+      </div>
+    )
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-
-        >
-          Learn React with TypeScript
-        </a>
-      </header>
-    </div>
-  );
+    <QueryClientProvider client={queryClient}>
+      <Example />
+    </QueryClientProvider>
+  )
 }
-
-export default App;
