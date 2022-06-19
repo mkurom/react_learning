@@ -4,16 +4,29 @@ import {
   useQuery
 } from 'react-query'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+      staleTime: 300000,
+    },
+  },
+});
 
 export default function App() {
 
   const Example = () => {
     const { isLoading, error, data } = useQuery('repoData', () =>
-      fetch('https://api.github.com/repos/tannerlinsley/react-query').then(res =>
-        res.json()
+      fetch('https://api.github.com/repos/tannerlinsley/react-query').then(res => {
+        console.log('call api');
+        return res.json();
+      }
       )
     )
+
+    console.log('build app');
+    console.log(data);
 
     if (isLoading) {
       return (
@@ -35,9 +48,9 @@ export default function App() {
       <div>
         <h1>{data.name}</h1>
         <p>{data.description}</p>
-        <strong>👀 {data.subscribers_count}</strong>{' '}
-        <strong>✨ {data.stargazers_count}</strong>{' '}
-        <strong>🍴 {data.forks_count}</strong>
+        <p>subscribers <strong>👀 {data.subscribers_count}</strong>{' '}</p>
+        <p>stargazers<strong>✨ {data.stargazers_count}</strong>{' '}</p>
+        <p>forks<strong>🍴 {data.forks_count}</strong></p>
       </div>
     )
   }
