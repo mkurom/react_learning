@@ -4,6 +4,8 @@ import {
   useQuery
 } from 'react-query'
 
+import { Button } from '@mui/material';
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -26,9 +28,9 @@ export default function App() {
       {
         // falseだと、queryFnが実行されない
         enabled: false,
-        // initialData: {
-        //   name: 'initial data name'
-        // }
+        initialData: {
+          name: 'initial data name'
+        }
       }
     )
 
@@ -67,6 +69,18 @@ export default function App() {
         <p>subscribers <strong>👀 {data?.subscribers_count ?? 'none subscribers_count'}</strong>{' '}</p>
         <p>stargazers<strong>✨ {data?.stargazers_count ?? 'stargazers_count'}</strong>{' '}</p>
         <p>forks<strong>🍴 {data?.forks_count ?? 'forks_count'}</strong></p>
+        <Button
+          onClick={
+            () => {
+              queryClient.setQueryData(['repoData'], {
+                name: 'new user',
+                description: 'new description',
+              });
+            }
+          }
+        >
+          更新ボタン
+        </Button>
       </div>
     )
   }
