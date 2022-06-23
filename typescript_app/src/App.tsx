@@ -19,6 +19,7 @@ const queryClient = new QueryClient({
 export default function App() {
 
   const Example = () => {
+    // 取得したデータをrepoDataをkey、res.json()をvalueに保存する
     const { isLoading, isError, error, data } = useQuery('repoData', () =>
       fetch('https://api.github.com/repos/tannerlinsley/react-query').then(res => {
         console.log('call api');
@@ -34,8 +35,12 @@ export default function App() {
       }
     )
 
-    console.log('build app');
+    console.log('render app');
     console.log(data);
+
+    // 何もなければ、空配列が取得できる
+    console.log('noData');
+    console.log(queryClient.getQueriesData('noData'));
 
     if (isLoading) {
       return (
@@ -72,9 +77,16 @@ export default function App() {
         <Button
           onClick={
             () => {
+              console.log('change state');
+              // キャッシュに直接書き込む
               queryClient.setQueryData(['repoData'], {
                 name: 'new user',
                 description: 'new description',
+              });
+
+              // noDataをkeyにして、{note: 'no data Description',}をvalueにセットする
+              queryClient.setQueryData(['noData'], {
+                note: 'no data Description',
               });
             }
           }
