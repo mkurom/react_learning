@@ -28,7 +28,7 @@ export default function App() {
 
   const Example = () => {
     // 取得したデータをrepoDataをkey、res.json()をvalueに保存する
-    const { isLoading, isError, error, data } = useQuery<RepoDataType>('repoData', () =>
+    const { isLoading, isError, error, data } = useQuery<RepoDataType, Error>('repoData', () =>
       fetch('https://api.github.com/repos/tannerlinsley/react-query').then(res => {
         console.log('call api');
         return res.json();
@@ -65,7 +65,7 @@ export default function App() {
     if (isError) {
       return (
         <>
-          'An error has occurred: ' + error.message
+          'An error has occurred: ' + {error.message}
         </>
       )
     }
