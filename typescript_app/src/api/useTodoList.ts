@@ -1,12 +1,27 @@
-import {
-  useQuery
-} from 'react-query';
+import { useQuery } from 'react-query';
 
-type TodoType = {
+// import axios, { AxiosResponse } from 'axios';
+
+export type TodoType = {
   userId: Number,
   id: Number,
   title: String,
   completed: boolean,
+}
+
+// const fetchTodosQueryFnWithAxios = async () =>
+//   await axios.get('https://jsonplaceholder.typicode.com/todos').then(res => {
+//     return res;
+//   }
+//   );
+
+const fetchPaginatedTodosQueryFn = async (userId: Number) => {
+  const result = await fetch('https://jsonplaceholder.typicode.com/todos?userId=' + userId);
+
+  if (result.status !== 200) {
+    throw new Error('fetch Error')
+  }
+  return result.json();
 }
 
 const fetchTodosQueryFn = async () => {
@@ -27,36 +42,48 @@ const fetchCompletedTodosQueryFn = async () => {
   return result.json();
 }
 
-// TODO:要確認
-// React Hook "useQuery" is called in function "fetchTodoList" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use"  react-hooks/rules-of-hooks
 export const useTodoList = () => {
+
   const fetchTodoList = () => {
     console.log('fetch todos');
 
+    return useQuery<TodoType[], Error>(
+      'todos',
+      // ['todos', { completed: true }],
+      fetchTodosQueryFn,
+      {
+        notifyOnChangeProps: ["data"],
+        refetchOnWindowFocus: false,
+        // keepPreviousData: true,
+      }
+    );
+
+    // // オブジェクトとして書くことも可能
     // return useQuery<TodoType[], Error>(
-    //   'todos',
-    //   // ['todos', { completed: true }],
-    //   fetchTodosQueryFn,
     //   {
-    //     notifyOnChangeProps: ["data"],
-    //     refetchOnWindowFocus: false,
+    //     queryKey: 'todos',
+    //     queryFn: fetchTodosQueryFn,
+    //     ...{
+    //       notifyOnChangeProps: ["data"],
+    //       refetchOnWindowFocus: false,
+    //     }
     //   }
     // );
+  }
 
-    // オブジェクトとして書くことも可能
+  const fetchPaginatedTodoList = async (page: number) => {
     return useQuery<TodoType[], Error>(
+      ['todos', page],
+      await fetchPaginatedTodosQueryFn(page),
       {
-        queryKey: 'todos',
-        queryFn: fetchTodosQueryFn,
-        ...{
-          notifyOnChangeProps: ["data"],
-          refetchOnWindowFocus: false,
-        }
+        notifyOnChangeProps: ["data"],
+        refetchOnWindowFocus: false,
+        keepPreviousData: true,
       }
     );
   }
 
-  return { fetchTodoList };
+  return { fetchTodoList, fetchPaginatedTodoList };
 }
 
 

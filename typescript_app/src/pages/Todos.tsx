@@ -1,4 +1,3 @@
-
 import { useTodoList } from '../api/useTodoList';
 
 export const Todos = () => {
@@ -6,7 +5,7 @@ export const Todos = () => {
 
   const { fetchTodoList } = useTodoList();
 
-  const { isLoading, isError, error, data } = fetchTodoList();
+  const { isLoading, isError, error, data: todoList } = fetchTodoList();
 
   if (isLoading) {
     return (
@@ -24,7 +23,7 @@ export const Todos = () => {
     );
   }
 
-  if (!data) {
+  if (!todoList) {
     return (
       <>
         none data
@@ -34,7 +33,7 @@ export const Todos = () => {
 
   return (
     <ul>
-      {data.map(todo => (
+      {todoList.map(todo => (
         <li key={todo.id.toString()}>{todo.title}</li>
       ),
       )}
