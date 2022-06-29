@@ -3,7 +3,8 @@ import {
   QueryClientProvider,
 } from 'react-query'
 
-import { Todos } from './pages/Todos';
+// import { Todos } from './pages/Todos';
+import { UserInputForm } from './pages/UserInputForm';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,7 +20,8 @@ export const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Todos />
+      {/* <Todos /> */}
+      <UserInputForm />
     </QueryClientProvider>
   )
 }
