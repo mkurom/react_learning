@@ -1,11 +1,12 @@
-import { Button, Container, Stack, TextField } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Typography, Button, Container, Stack, TextField, Modal } from '@mui/material';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useFirebaseAuth } from '../api/firebase/useFirebaseAuth';
 
-type UserInputFormType = {
+type FirebaseAuthPersistenceType = {
   email: string
-  name: string
   password: string
 };
 
@@ -15,7 +16,6 @@ const schema = yup.object({
     .string()
     .required('必須項目です。')
     .email('正しいメールアドレス入力してください。'),
-  name: yup.string().required('必須項目です。'),
   password: yup
     .string()
     .required('必須項目です。')
@@ -28,19 +28,42 @@ const schema = yup.object({
 
 export const UserInputForm = () => {
 
+  console.log('render UserInputForm');
+
+  const { anonymousSignIn, authStateChanged, deleteUserFn, persistenceAuthState } = useFirebaseAuth();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<UserInputFormType>({ resolver: yupResolver(schema) })
+  } = useForm<FirebaseAuthPersistenceType>({ resolver: yupResolver(schema) })
 
-  const onSubmit: SubmitHandler<UserInputFormType> = (data) => {
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const _anonymousSignIn = async () => {
+      authStateChanged();
+
+      setIsLoading(false);
+    };
+    _anonymousSignIn();
+  }, [])
+
+
+  const onSubmit: SubmitHandler<FirebaseAuthPersistenceType> = (data) => {
     console.log(data)
+
+    persistenceAuthState(data.email, data.password);
   };
+
+
+  if (isLoading) {
+    return (<Typography>読み込み中...</Typography>);
+  }
 
   return (
     <Container maxWidth="sm" sx={{ pt: 5 }}>
       <Stack spacing={3}>
+        <Typography>匿名ログイン</Typography>
         <TextField
           required
           label="メールアドレス"
@@ -48,13 +71,6 @@ export const UserInputForm = () => {
           {...register('email')}
           error={'email' in errors}
           helperText={errors.email?.message}
-        />
-        <TextField
-          required
-          label="お名前"
-          {...register('name')}
-          error={'name' in errors}
-          helperText={errors.name?.message}
         />
         <TextField
           required
@@ -70,9 +86,39 @@ export const UserInputForm = () => {
           size="large"
           onClick={handleSubmit(onSubmit)}
         >
-          作成
+          ユーザーの永続化
         </Button>
       </Stack>
+
+
+      {/*  テスト用 */}
+      <Button
+        color="primary"
+        variant="contained"
+        size="large"
+        onClick={async () => {
+          setIsLoading(true);
+          const user = await anonymousSignIn();
+          setIsLoading(false);
+        }}
+      >
+        匿名ログイン
+      </Button>
+
+      <Button
+        color="primary"
+        variant="contained"
+        size="large"
+        onClick={() => {
+          const result = deleteUserFn();
+
+          if (!result) {
+            console.log('failed');
+          }
+        }}
+      >
+        匿名ユーザ削除
+      </Button>
     </Container>
   );
 };
