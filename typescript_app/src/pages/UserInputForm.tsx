@@ -30,7 +30,7 @@ export const UserInputForm = () => {
 
   console.log('render UserInputForm');
 
-  const { anonymousSignIn, authStateChanged, deleteUserFn, persistenceAuthState } = useFirebaseAuth();
+  const { auth, anonymousSignIn, authStateChanged, deleteUserFn, persistenceAuthState } = useFirebaseAuth();
 
   const {
     register,
@@ -64,6 +64,7 @@ export const UserInputForm = () => {
     <Container maxWidth="sm" sx={{ pt: 5 }}>
       <Stack spacing={3}>
         <Typography>匿名ログイン</Typography>
+        <Typography>uid: {auth.currentUser?.uid}</Typography>
         <TextField
           required
           label="メールアドレス"
