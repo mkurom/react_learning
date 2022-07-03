@@ -1,13 +1,7 @@
 import { useQuery } from 'react-query';
+import { TodoType } from '../type/todoType';
 
 // import axios, { AxiosResponse } from 'axios';
-
-export type TodoType = {
-  userId: Number,
-  id: Number,
-  title: String,
-  completed: boolean,
-}
 
 // const fetchTodosQueryFnWithAxios = async () =>
 //   await axios.get('https://jsonplaceholder.typicode.com/todos').then(res => {
