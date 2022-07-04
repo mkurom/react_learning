@@ -1,40 +1,28 @@
-import { useQuery } from 'react-query';
+import { useQuery, useMutation } from 'react-query';
 import { TodoType } from '../type/todoType';
 
-// import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import { string } from 'yup';
 
-// const fetchTodosQueryFnWithAxios = async () =>
-//   await axios.get('https://jsonplaceholder.typicode.com/todos').then(res => {
-//     return res;
+interface NewTodoType {
+  id: number;
+  title: string;
+}
+
+
+// const fetchTodosQueryFn = async () => {
+//   const result = await fetch('https://jsonplaceholder.typicode.com/todos');
+
+//   if (result.status !== 200) {
+//     throw new Error('fetch Error')
 //   }
-//   );
+//   return result.json();
+// }
 
-const fetchPaginatedTodosQueryFn = async (userId: Number) => {
-  const result = await fetch('https://jsonplaceholder.typicode.com/todos?userId=' + userId);
-
-  if (result.status !== 200) {
-    throw new Error('fetch Error')
-  }
-  return result.json();
-}
-
-const fetchTodosQueryFn = async () => {
-  const result = await fetch('https://jsonplaceholder.typicode.com/todos');
-
-  if (result.status !== 200) {
-    throw new Error('fetch Error')
-  }
-  return result.json();
-}
-
-const fetchCompletedTodosQueryFn = async () => {
-  const result = await fetch('https://jsonplaceholder.typicode.com/todos?completed=true');
-
-  if (result.status !== 200) {
-    throw new Error('fetch Error')
-  }
-  return result.json();
-}
+const fetchTodosQueryFnWithAxios = async () =>
+  await axios.get<TodoType[]>('https://jsonplaceholder.typicode.com/todos').then(res => {
+    return res.data;
+  });
 
 export const useTodoList = () => {
 
@@ -42,9 +30,13 @@ export const useTodoList = () => {
     console.log('fetch todos');
 
     return useQuery<TodoType[], Error>(
+      // queryKey
       'todos',
       // ['todos', { completed: true }],
-      fetchTodosQueryFn,
+
+      // queryFn
+      // fetchTodosQueryFn,
+      fetchTodosQueryFnWithAxios,
       {
         notifyOnChangeProps: ["data"],
         refetchOnWindowFocus: false,
@@ -65,19 +57,12 @@ export const useTodoList = () => {
     // );
   }
 
-  const fetchPaginatedTodoList = async (page: number) => {
-    return useQuery<TodoType[], Error>(
-      ['todos', page],
-      await fetchPaginatedTodosQueryFn(page),
-      {
-        notifyOnChangeProps: ["data"],
-        refetchOnWindowFocus: false,
-        keepPreviousData: true,
-      }
-    );
-  }
+  const createTodo = async (body: NewTodoType) => await axios.post('https://jsonplaceholder.typicode.com/todos', body).then(res => res.data);
 
-  return { fetchTodoList, fetchPaginatedTodoList };
+  const updateTodo = async (id: number, body: NewTodoType) => await axios.post(`https://jsonplaceholder.typicode.com/todos${id}`, body).then(res => res.data);
+
+
+  return { fetchTodoList, createTodo, updateTodo };
 }
 
 
