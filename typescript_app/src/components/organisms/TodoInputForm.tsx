@@ -47,29 +47,36 @@ export const TodoInputForm = () => {
   return (
     <Container maxWidth="sm" sx={{ p: 5 }}>
       <Typography variant='h1' >Todo List</Typography>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-around',
-        }}
-      >
-        <TextField
-          required
-          label="タイトル"
-          type="title"
-          {...register('title')}
-          error={'title' in errors}
-          helperText={errors.title?.message}
-        />
-        <Button
-          color="primary"
-          variant="contained"
-          size="large"
-          onClick={handleSubmit(onSubmit)}
+
+      {mutation.isLoading ?
+        <>
+          作成中...
+        </>
+        :
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-around',
+          }}
         >
-          新規作成
-        </Button>
-      </Box>
+          <TextField
+            required
+            label="タイトル"
+            type="title"
+            {...register('title')}
+            error={'title' in errors}
+            helperText={errors.title?.message}
+          />
+          <Button
+            color="primary"
+            variant="contained"
+            size="large"
+            onClick={handleSubmit(onSubmit)}
+          >
+            新規作成
+          </Button>
+        </Box>
+      }
     </Container>
   );
 };
