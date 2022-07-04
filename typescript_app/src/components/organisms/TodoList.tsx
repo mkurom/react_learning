@@ -1,7 +1,7 @@
 import { useTodoList } from '../../api/useTodoList';
 
 export const TodoList = () => {
-  console.log('render Todos');
+  console.log('render TodoList');
 
   const { fetchTodoList } = useTodoList();
 

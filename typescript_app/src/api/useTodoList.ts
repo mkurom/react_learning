@@ -9,7 +9,6 @@ interface NewTodoType {
   title: string;
 }
 
-
 // const fetchTodosQueryFn = async () => {
 //   const result = await fetch('https://jsonplaceholder.typicode.com/todos');
 
@@ -19,10 +18,11 @@ interface NewTodoType {
 //   return result.json();
 // }
 
-const fetchTodosQueryFnWithAxios = async () =>
-  await axios.get<TodoType[]>('https://jsonplaceholder.typicode.com/todos').then(res => {
-    return res.data;
-  });
+const fetchTodosQueryFn = () => axios.get<TodoType[]>('https://jsonplaceholder.typicode.com/todos').then(res => {
+  return res.data;
+});
+
+const createTodoQueryFn = (body: NewTodoType) => axios.post<NewTodoType>('https://jsonplaceholder.typicode.com/todos', body).then(res => res.data);
 
 export const useTodoList = () => {
 
@@ -33,10 +33,8 @@ export const useTodoList = () => {
       // queryKey
       'todos',
       // ['todos', { completed: true }],
-
       // queryFn
-      // fetchTodosQueryFn,
-      fetchTodosQueryFnWithAxios,
+      fetchTodosQueryFn,
       {
         notifyOnChangeProps: ["data"],
         refetchOnWindowFocus: false,
@@ -57,12 +55,27 @@ export const useTodoList = () => {
     // );
   }
 
-  const createTodo = async (body: NewTodoType) => await axios.post('https://jsonplaceholder.typicode.com/todos', body).then(res => res.data);
+  const createTodo = async (body: NewTodoType) => await createTodoQueryFn(body);
+
+  const createTodoWithMutation = () => useMutation<NewTodoType, Error, NewTodoType>(
+    'newTodo',
+    async (body: NewTodoType) => {
+      const result = await createTodoQueryFn(body);
+      return result;
+    },
+    {
+      onSuccess: (todo) => {
+        console.log('Mutation', todo);
+      },
+      onError(error, variables, context) {
+        console.log('error', error.message);
+      },
+    }
+  );
 
   const updateTodo = async (id: number, body: NewTodoType) => await axios.post(`https://jsonplaceholder.typicode.com/todos${id}`, body).then(res => res.data);
 
-
-  return { fetchTodoList, createTodo, updateTodo };
+  return { fetchTodoList, createTodo, createTodoWithMutation, updateTodo };
 }
 
 

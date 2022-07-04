@@ -14,8 +14,11 @@ let todoSchema = yup.object({
 });
 
 export const TodoInputForm = () => {
+  console.log('render TodoInputForm');
 
-  const { createTodo } = useTodoList();
+  const { createTodo, createTodoWithMutation } = useTodoList();
+
+  const mutation = createTodoWithMutation();
 
   const {
     register,
@@ -24,12 +27,21 @@ export const TodoInputForm = () => {
   } = useForm<TodoType>({ resolver: yupResolver(todoSchema) })
 
   const onSubmit: SubmitHandler<TodoType> = async (data) => {
-    const result = await createTodo(
+    // mutation未使用
+    // const result = await createTodo(
+    //   {
+    //     id: data.id,
+    //     title: data.title,
+    //   });
+    // console.log(result);
+
+    // mutationを使用したPOSTメソッド
+    // 2回レンダリングされる
+    mutation.mutate(
       {
         id: data.id,
         title: data.title,
       });
-    console.log(result);
   };
 
   return (
