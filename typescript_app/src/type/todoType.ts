@@ -1,8 +1,8 @@
 
 export type TodoType = {
-  userId: Number,
-  id: Number,
-  title: String,
+  userId: number,
+  id: number,
+  title: string,
   completed: boolean,
   createdAt: string,
   updatedAt: string,
